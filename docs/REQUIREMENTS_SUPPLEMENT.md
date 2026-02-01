@@ -60,17 +60,19 @@
 - **성격 구분:**
     - **Personal (개인):** 나의 사적인 약속.
     - **Joint (공용):** 구성원 모두의 약속. *공유 그룹에서만 선택 가능.*
-- **반복 규칙 (v1 간소화):** iCal RRULE 서브셋.
+- **반복 규칙:**
 
-| 옵션 | repeat_rule 값 |
-|------|----------------|
-| 반복 없음 | `NULL` |
-| 매일 | `FREQ=DAILY` |
-| 매주 | `FREQ=WEEKLY;BYDAY=MO` |
-| 매월 | `FREQ=MONTHLY;BYMONTHDAY=15` |
-| 매년 | `FREQ=YEARLY` |
+| 옵션 | repeat_type 값 | 설명 |
+|------|---------------|------|
+| 반복 없음 | `NONE` | 기본값 |
+| 매일 | `DAILY` | |
+| 매주 | `WEEKLY` | 생성 시점의 요일 기준 |
+| 매월 | `MONTHLY` | 생성 시점의 일자 기준 |
+| 매년 | `YEARLY` | 생성 시점의 월/일 기준 |
 
-- v1에서는 종료일 없이 무한 반복. 사용자가 수동 삭제로 종료.
+- **데이터 사전 생성 방식:** 반복 설정 시 사용자가 **반복 종료일**을 지정하면, 시작일~종료일 범위 내의 모든 개별 레코드를 **즉시 생성**(INSERT)한다.
+- 같은 반복에서 생성된 레코드는 `repeat_group_id`로 묶인다.
+- 개별 레코드 수정/삭제 시 해당 건만 영향. 반복 그룹 전체 삭제도 가능.
 
 ### 3.2 가계부 (Transaction)
 - **등록 방식의 이원화:**
@@ -81,7 +83,7 @@
     - **Joint (공용):** 공유 지출/수입 (기본 파란색, 커스텀 가능). *멤버 초대 수락 시 활성화.*
 - **자산 출처 (Asset Source):** 현금, 카드, 통장 등 실제 결제 수단.
 - **통화:** v1은 **KRW(원) 단일 통화**. 금액 표시: `#,###원` (정수).
-- **반복 수입/지출:** 일정과 동일한 `repeat_rule` 사용. v1에서는 수동 등록만, 자동 생성은 v1.5.
+- **반복 수입/지출:** 일정과 동일한 `repeat_type` + 사전 생성 방식. 급여, 월세, 구독료 등 정기 항목에 활용.
 
 ### 3.3 가계부 시작일 (Budget Cycle)
 - **기본값:** 매월 **1일**.
@@ -357,7 +359,8 @@ Schedules
 ├── asset_type          ENUM('PERSONAL', 'JOINT')
 ├── category_id         BIGINT, FK → Categories.id, NULLABLE
 ├── memo                TEXT, NULLABLE
-├── repeat_rule         VARCHAR, NULLABLE
+├── repeat_type         ENUM('NONE','DAILY','WEEKLY','MONTHLY','YEARLY'), DEFAULT 'NONE'
+├── repeat_group_id     BIGINT, NULLABLE             -- 같은 반복에서 생성된 레코드 그룹
 ├── created_at          DATETIME
 └── updated_at          DATETIME
 
@@ -373,7 +376,8 @@ Transactions
 ├── asset_source_id     BIGINT, FK → Asset_Sources.id, NULLABLE
 ├── date                DATE, NOT NULL
 ├── memo                TEXT, NULLABLE
-├── repeat_rule         VARCHAR, NULLABLE
+├── repeat_type         ENUM('NONE','DAILY','WEEKLY','MONTHLY','YEARLY'), DEFAULT 'NONE'
+├── repeat_group_id     BIGINT, NULLABLE             -- 같은 반복에서 생성된 레코드 그룹
 ├── created_at          DATETIME
 └── updated_at          DATETIME
 
