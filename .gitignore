@@ -72,3 +72,10 @@ coverage/
 *.log
 tmp/
 .mcp.json
+
+# ===== Claude Code =====
+# Keep skills and hooks in version control
+# Ignore local settings and logs
+.claude/settings.local.json
+.claude/*.log
+~/.claude/

@@ -1,8 +1,8 @@
 plugins {
 	kotlin("jvm") version "1.9.22" apply false
 	kotlin("plugin.spring") version "1.9.22" apply false
-	id("org.springframework.boot") version "3.2.2" apply false
-	id("io.spring.dependency-management") version "1.1.6" apply false
+	id("org.springframework.boot") version "3.4.2" apply false
+	id("io.spring.dependency-management") version "1.1.7" apply false
 	kotlin("plugin.jpa") version "1.9.22" apply false
 }
 
@@ -38,5 +38,9 @@ subprojects {
 		"implementation"("com.fasterxml.jackson.module:jackson-module-kotlin")
 		"testImplementation"("org.jetbrains.kotlin:kotlin-test-junit5")
 		"testRuntimeOnly"("org.junit.platform:junit-platform-launcher")
+	}
+
+	tasks.withType<Test> {
+		useJUnitPlatform()
 	}
 }

@@ -8,6 +8,7 @@ dependencies {
     api("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
+    implementation("org.springframework.security:spring-security-crypto")
 
     // Test dependencies
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
