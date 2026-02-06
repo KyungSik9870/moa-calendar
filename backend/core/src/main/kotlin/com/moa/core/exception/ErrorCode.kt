@@ -15,6 +15,13 @@ enum class ErrorCode(
     // User
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
 
+    // Group
+    GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "그룹을 찾을 수 없습니다."),
+    GROUP_ACCESS_DENIED(HttpStatus.FORBIDDEN, "해당 그룹에 대한 접근 권한이 없습니다."),
+
+    // Schedule
+    SCHEDULE_NOT_FOUND(HttpStatus.NOT_FOUND, "일정을 찾을 수 없습니다."),
+
     // Common
     INVALID_INPUT(HttpStatus.BAD_REQUEST, "잘못된 입력입니다."),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),

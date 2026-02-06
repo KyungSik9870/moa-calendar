@@ -6,6 +6,7 @@ import com.moa.api.dto.response.SignUpResponse
 import com.moa.api.dto.response.TokenResponse
 import com.moa.api.dto.response.UserResponse
 import com.moa.api.security.JwtTokenProvider
+import com.moa.core.domain.group.GroupService
 import com.moa.core.domain.user.UserService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1/auth")
 class AuthController(
     private val userService: UserService,
+    private val groupService: GroupService,
     private val jwtTokenProvider: JwtTokenProvider,
 ) {
 
@@ -32,6 +34,7 @@ class AuthController(
             profileImageUrl = request.profileImageUrl,
         )
 
+        groupService.createPersonalGroup(user, "${user.nickname}의 캘린더")
         val token = jwtTokenProvider.generateAccessToken(user.id, user.email)
 
         return ResponseEntity

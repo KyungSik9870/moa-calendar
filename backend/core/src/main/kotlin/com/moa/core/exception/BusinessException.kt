@@ -13,3 +13,12 @@ class InvalidCredentialsException :
 
 class UserNotFoundException(identifier: String) :
     BusinessException(ErrorCode.USER_NOT_FOUND, "사용자를 찾을 수 없습니다: $identifier")
+
+class GroupNotFoundException(groupId: Long) :
+    BusinessException(ErrorCode.GROUP_NOT_FOUND, "그룹을 찾을 수 없습니다: $groupId")
+
+class GroupAccessDeniedException(groupId: Long) :
+    BusinessException(ErrorCode.GROUP_ACCESS_DENIED, "해당 그룹에 대한 접근 권한이 없습니다: $groupId")
+
+class ScheduleNotFoundException(scheduleId: Long) :
+    BusinessException(ErrorCode.SCHEDULE_NOT_FOUND, "일정을 찾을 수 없습니다: $scheduleId")
