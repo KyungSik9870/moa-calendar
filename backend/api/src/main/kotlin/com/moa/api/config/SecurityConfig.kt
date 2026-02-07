@@ -28,6 +28,12 @@ class SecurityConfig(
                 auth
                     .requestMatchers("/api/v1/auth/**").permitAll()
                     .requestMatchers("/h2-console/**").permitAll()
+                    .requestMatchers(
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**",
+                        "/v3/api-docs",
+                    ).permitAll()
                     .anyRequest().authenticated()
             }
             .headers { it.frameOptions { frame -> frame.sameOrigin() } }

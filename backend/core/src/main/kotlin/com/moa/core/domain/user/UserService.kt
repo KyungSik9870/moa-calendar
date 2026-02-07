@@ -53,4 +53,20 @@ class UserService(
 
     fun findByEmail(email: String): User =
         userRepository.findByEmail(email) ?: throw UserNotFoundException(email)
+
+    fun searchByEmail(email: String): User? =
+        userRepository.findByEmail(email)
+
+    @Transactional
+    fun updateProfile(
+        userId: Long,
+        nickname: String?,
+        colorCode: String?,
+        personalAssetColor: String?,
+        profileImageUrl: String?,
+    ): User {
+        val user = findById(userId)
+        user.updateProfile(nickname, colorCode, personalAssetColor, profileImageUrl)
+        return user
+    }
 }
