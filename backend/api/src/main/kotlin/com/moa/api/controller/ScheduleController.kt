@@ -4,6 +4,7 @@ import com.moa.api.dto.request.CreateScheduleRequest
 import com.moa.api.dto.request.UpdateScheduleRequest
 import com.moa.api.dto.response.ScheduleResponse
 import com.moa.api.security.UserPrincipal
+import com.moa.core.domain.AssetType
 import com.moa.core.domain.schedule.ScheduleService
 import com.moa.core.domain.user.UserService
 import jakarta.validation.Valid
@@ -63,9 +64,13 @@ class ScheduleController(
         @PathVariable groupId: Long,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) startDate: LocalDate,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) endDate: LocalDate,
+        @RequestParam(required = false) filterUserId: Long?,
+        @RequestParam(required = false) filterAssetType: AssetType?,
         @AuthenticationPrincipal principal: UserPrincipal,
     ): ResponseEntity<List<ScheduleResponse>> {
-        val schedules = scheduleService.findByDateRange(groupId, principal.userId, startDate, endDate)
+        val schedules = scheduleService.findByDateRange(
+            groupId, principal.userId, startDate, endDate, filterUserId, filterAssetType,
+        )
         return ResponseEntity.ok(schedules.map(ScheduleResponse::from))
     }
 

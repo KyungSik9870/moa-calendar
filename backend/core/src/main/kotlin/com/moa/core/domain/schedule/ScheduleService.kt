@@ -70,9 +70,20 @@ class ScheduleService(
         return schedule
     }
 
-    fun findByDateRange(groupId: Long, userId: Long, startDate: LocalDate, endDate: LocalDate): List<Schedule> {
+    fun findByDateRange(
+        groupId: Long,
+        userId: Long,
+        startDate: LocalDate,
+        endDate: LocalDate,
+        filterUserId: Long? = null,
+        filterAssetType: AssetType? = null,
+    ): List<Schedule> {
         verifyGroupAccess(groupId, userId)
-        return scheduleRepository.findByGroupIdAndDateRange(groupId, startDate, endDate)
+        return when {
+            filterUserId != null -> scheduleRepository.findByGroupIdAndDateRangeAndUserId(groupId, startDate, endDate, filterUserId)
+            filterAssetType != null -> scheduleRepository.findByGroupIdAndDateRangeAndAssetType(groupId, startDate, endDate, filterAssetType)
+            else -> scheduleRepository.findByGroupIdAndDateRange(groupId, startDate, endDate)
+        }
     }
 
     fun findById(scheduleId: Long, userId: Long): Schedule {
