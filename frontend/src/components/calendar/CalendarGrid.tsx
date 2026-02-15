@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { format, isSameDay, startOfMonth, getDay, getDaysInMonth, addDays } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { nextMonth, prevMonth } from '../../utils/date';
+import { COLORS } from '../../constants/theme';
 import type { ScheduleResponse, TransactionResponse } from '../../types/api';
 
 const DAYS_OF_WEEK = ['일', '월', '화', '수', '목', '금', '토'];
@@ -20,7 +21,7 @@ interface CalendarGridProps {
 
 export default function CalendarGrid({
   currentMonth,
-  selectedDate,
+  selectedDate: _selectedDate,
   focusedDate,
   schedules,
   transactions,
@@ -37,7 +38,7 @@ export default function CalendarGrid({
   schedules.forEach((s) => {
     const key = s.start_date;
     if (!scheduleMap.has(key)) scheduleMap.set(key, []);
-    scheduleMap.get(key)!.push({ title: s.title, color: s.user_color || '#5B9FFF' });
+    scheduleMap.get(key)!.push({ title: s.title, color: s.user_color_code || '#5B9FFF' });
   });
 
   // Build expense map by date
@@ -63,7 +64,7 @@ export default function CalendarGrid({
           onPress={() => onMonthChange(prevMonth(currentMonth))}
           style={styles.navButton}
         >
-          <Icon name="chevron-back" size={20} color="#000" />
+          <Icon name="chevron-back" size={20} color={COLORS.gray900} />
         </TouchableOpacity>
         <Text style={styles.monthTitle}>
           {format(currentMonth, 'yyyy년 M월', { locale: ko })}
@@ -72,7 +73,7 @@ export default function CalendarGrid({
           onPress={() => onMonthChange(nextMonth(currentMonth))}
           style={styles.navButton}
         >
-          <Icon name="chevron-forward" size={20} color="#000" />
+          <Icon name="chevron-forward" size={20} color={COLORS.gray900} />
         </TouchableOpacity>
       </View>
 
@@ -176,9 +177,9 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   monthTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
+    fontSize: 17,
+    fontWeight: '700',
+    color: COLORS.gray900,
   },
   weekHeader: {
     flexDirection: 'row',
@@ -190,14 +191,15 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   weekText: {
-    fontSize: 12,
-    color: '#6B7280',
+    fontSize: 13,
+    fontWeight: '500',
+    color: COLORS.gray500,
   },
   sundayText: {
-    color: '#EF4444',
+    color: COLORS.danger,
   },
   saturdayText: {
-    color: '#3B82F6',
+    color: COLORS.primary,
   },
   grid: {
     flexDirection: 'row',
@@ -210,20 +212,20 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     paddingTop: 4,
     paddingHorizontal: 2,
-    borderRadius: 8,
+    borderRadius: 10,
   },
   todayCell: {
     borderWidth: 2,
-    borderColor: '#F472B6',
+    borderColor: COLORS.todayRing,
   },
   focusedCell: {
     borderWidth: 2,
-    borderColor: '#FB923C',
-    backgroundColor: '#FFF7ED',
+    borderColor: COLORS.focusedRing,
+    backgroundColor: COLORS.focusedBg,
   },
   dayNumber: {
-    fontSize: 13,
-    color: '#111827',
+    fontSize: 14,
+    color: COLORS.gray900,
     marginBottom: 2,
   },
   eventBars: {
@@ -232,16 +234,17 @@ const styles = StyleSheet.create({
   },
   eventBar: {
     height: 3,
-    borderRadius: 2,
+    borderRadius: 1.5,
     width: '100%' as unknown as number,
   },
   moreEvents: {
     fontSize: 7,
-    color: '#9CA3AF',
+    color: COLORS.gray400,
   },
   expenseText: {
-    fontSize: 8,
-    color: '#DC2626',
+    fontSize: 9,
+    fontWeight: '500',
+    color: COLORS.expense,
     marginTop: 2,
   },
   legend: {
@@ -261,15 +264,15 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   todayLegend: {
-    borderColor: '#F472B6',
+    borderColor: COLORS.todayRing,
     backgroundColor: 'transparent',
   },
   focusedLegend: {
-    borderColor: '#FB923C',
-    backgroundColor: '#FFF7ED',
+    borderColor: COLORS.focusedRing,
+    backgroundColor: COLORS.focusedBg,
   },
   legendText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: COLORS.gray500,
   },
 });

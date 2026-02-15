@@ -21,9 +21,9 @@ export const groupsApi = {
   invite: (groupId: number, data: InviteRequest) =>
     apiClient.post<InviteResponse>(`/groups/${groupId}/invites`, data).then(res => res.data),
   getPendingInvites: () =>
-    apiClient.get<InviteResponse[]>('/invites/pending').then(res => res.data),
+    apiClient.get<InviteResponse[]>('/groups/invites/pending').then(res => res.data),
   acceptInvite: (inviteId: number) =>
-    apiClient.post(`/invites/${inviteId}/accept`),
+    apiClient.post('/groups/invites/' + inviteId + '/accept'),
   rejectInvite: (inviteId: number) =>
-    apiClient.post(`/invites/${inviteId}/reject`),
+    apiClient.post('/groups/invites/' + inviteId + '/reject'),
 };

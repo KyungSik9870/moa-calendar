@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { groupsApi } from '../../api/groups';
 import { useAuthStore } from '../../store/authStore';
+import { COLORS, RADIUS, SHADOWS } from '../../constants/theme';
 import type { RootScreenProps } from '../../types/navigation';
 import type { GroupMemberResponse } from '../../types/api';
 
@@ -41,7 +42,7 @@ export default function MemberListScreen({ route, navigation }: RootScreenProps<
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="chevron-back" size={24} color="#374151" />
+          <Icon name="chevron-back" size={24} color={COLORS.gray700} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>멤버 목록</Text>
         <View style={{ width: 24 }} />
@@ -51,49 +52,85 @@ export default function MemberListScreen({ route, navigation }: RootScreenProps<
         data={members}
         keyExtractor={(item) => String(item.id)}
         contentContainerStyle={styles.list}
-        renderItem={({ item }) => (
-          <View style={styles.memberCard}>
-            <View style={styles.memberLeft}>
-              <View style={[styles.avatar, { backgroundColor: item.color_code }]}>
-                <Text style={styles.avatarText}>{item.nickname.charAt(0)}</Text>
-              </View>
-              <View>
-                <View style={styles.nameRow}>
-                  <Text style={styles.memberName}>{item.nickname}</Text>
-                  {item.role === 'HOST' && (
-                    <View style={styles.hostBadge}>
-                      <Text style={styles.hostBadgeText}>호스트</Text>
-                    </View>
-                  )}
+        renderItem={({ item }) => {
+          const isMe = item.user_id === user?.id;
+          return (
+            <View style={styles.memberCard}>
+              <View style={styles.memberLeft}>
+                <View style={[styles.colorDot, { backgroundColor: item.color_code }]} />
+                <View style={styles.memberInfo}>
+                  <Text style={styles.memberName}>
+                    {item.nickname}{isMe ? ' (나)' : ''}
+                  </Text>
+                  <Text style={styles.memberEmail}>{item.role === 'HOST' ? '호스트' : '게스트'}</Text>
                 </View>
-                <Text style={styles.memberEmail}>{item.email}</Text>
               </View>
+              {item.role === 'HOST' ? (
+                <View style={styles.hostBadge}>
+                  <Text style={styles.hostBadgeText}>호스트</Text>
+                </View>
+              ) : isHost ? (
+                <TouchableOpacity onPress={() => handleKick(item)} style={styles.kickBtn}>
+                  <Text style={styles.kickBtnText}>내보내기</Text>
+                </TouchableOpacity>
+              ) : null}
             </View>
-            {isHost && item.user_id !== user?.id && (
-              <TouchableOpacity onPress={() => handleKick(item)} style={styles.kickBtn}>
-                <Icon name="close-circle-outline" size={22} color="#EF4444" />
-              </TouchableOpacity>
-            )}
-          </View>
-        )}
+          );
+        }}
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFFFF' },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
-  headerTitle: { fontSize: 18, fontWeight: '600' },
-  list: { padding: 24, gap: 12 },
-  memberCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 12 },
+  container: { flex: 1, backgroundColor: COLORS.white },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.gray100,
+  },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: COLORS.gray900 },
+  list: { padding: 24, gap: 8 },
+  memberCard: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 18,
+    borderWidth: 1,
+    borderColor: COLORS.gray200,
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.white,
+    ...SHADOWS.card,
+  },
   memberLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  avatar: { width: 44, height: 44, borderRadius: 22, justifyContent: 'center', alignItems: 'center' },
-  avatarText: { fontSize: 16, fontWeight: '500', color: '#FFFFFF' },
-  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  memberName: { fontSize: 15, fontWeight: '500' },
-  hostBadge: { paddingHorizontal: 8, paddingVertical: 2, backgroundColor: '#EFF6FF', borderRadius: 4 },
-  hostBadgeText: { fontSize: 11, color: '#2563EB', fontWeight: '500' },
-  memberEmail: { fontSize: 13, color: '#6B7280', marginTop: 2 },
-  kickBtn: { padding: 8 },
+  colorDot: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+  },
+  memberInfo: { gap: 2 },
+  memberName: { fontSize: 15, fontWeight: '500', color: COLORS.gray900 },
+  memberEmail: { fontSize: 13, color: COLORS.gray500 },
+  hostBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    backgroundColor: COLORS.jointBadgeBg,
+    borderRadius: RADIUS.full,
+  },
+  hostBadgeText: { fontSize: 12, color: COLORS.primaryDark, fontWeight: '500' },
+  kickBtn: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    backgroundColor: '#FEF2F2',
+    borderRadius: RADIUS.full,
+  },
+  kickBtnText: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: COLORS.danger,
+  },
 });

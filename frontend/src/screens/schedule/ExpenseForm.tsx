@@ -2,22 +2,24 @@ import React, { useState, useImperativeHandle, forwardRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { format } from 'date-fns';
 import { transactionsApi } from '../../api/transactions';
+import { COLORS, RADIUS } from '../../constants/theme';
 import { useQueryClient } from '@tanstack/react-query';
+import DropdownSelect from '../../components/common/DropdownSelect';
 import type { ScheduleResponse } from '../../types/api';
 
 const EXPENSE_CATEGORIES = [
-  '🍚 식비',
-  '☕ 카페/간식',
-  '🚌 교통',
-  '🏠 주거/통신',
-  '👕 쇼핑',
-  '🎁 선물',
-  '💊 의료/건강',
-  '📚 교육',
-  '🎬 문화/여가',
-  '🐶 반려동물',
-  '✂️ 미용',
-  '📦 기타',
+  { label: '🍚 식비', value: '식비' },
+  { label: '☕ 카페/간식', value: '카페/간식' },
+  { label: '🚌 교통', value: '교통' },
+  { label: '🏠 주거/통신', value: '주거/통신' },
+  { label: '👕 쇼핑', value: '쇼핑' },
+  { label: '🎁 선물', value: '선물' },
+  { label: '💊 의료/건강', value: '의료/건강' },
+  { label: '📚 교육', value: '교육' },
+  { label: '🎬 문화/여가', value: '문화/여가' },
+  { label: '🐶 반려동물', value: '반려동물' },
+  { label: '✂️ 미용', value: '미용' },
+  { label: '📦 기타', value: '기타' },
 ];
 
 interface ExpenseFormProps {
@@ -61,6 +63,14 @@ const ExpenseForm = forwardRef(
       },
     }));
 
+    const daySchedules = schedules.filter(
+      (s) => s.start_date === format(selectedDate, 'yyyy-MM-dd'),
+    );
+    const scheduleOptions = [
+      { label: '연결 안 함', value: 'none' },
+      ...daySchedules.map((s) => ({ label: s.title, value: String(s.id) })),
+    ];
+
     return (
       <View style={styles.form}>
         {/* Amount */}
@@ -72,37 +82,22 @@ const ExpenseForm = forwardRef(
               value={amount}
               onChangeText={setAmount}
               placeholder="0"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={COLORS.gray400}
               keyboardType="numeric"
             />
             <Text style={styles.currency}>원</Text>
           </View>
         </View>
 
-        {/* Category */}
+        {/* Category - Dropdown */}
         <View style={styles.field}>
           <Text style={styles.label}>카테고리</Text>
-          <View style={styles.chipRow}>
-            {EXPENSE_CATEGORIES.map((cat) => {
-              const name = cat.split(' ').slice(1).join(' ');
-              return (
-                <TouchableOpacity
-                  key={cat}
-                  style={[styles.chip, category === name && styles.chipActive]}
-                  onPress={() => setCategory(name)}
-                >
-                  <Text
-                    style={[
-                      styles.chipText,
-                      category === name && styles.chipTextActive,
-                    ]}
-                  >
-                    {cat}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
+          <DropdownSelect
+            options={EXPENSE_CATEGORIES}
+            selectedValue={category}
+            onSelect={setCategory}
+            placeholder="카테고리 선택"
+          />
         </View>
 
         {/* Type */}
@@ -144,37 +139,15 @@ const ExpenseForm = forwardRef(
           </View>
         </View>
 
-        {/* Link to Schedule */}
+        {/* Link to Schedule - Dropdown */}
         <View style={styles.field}>
           <Text style={styles.label}>일정 연결</Text>
-          <View style={styles.chipRow}>
-            <TouchableOpacity
-              style={[styles.chip, !scheduleId && styles.chipActive]}
-              onPress={() => setScheduleId(undefined)}
-            >
-              <Text style={[styles.chipText, !scheduleId && styles.chipTextActive]}>
-                선택 안함
-              </Text>
-            </TouchableOpacity>
-            {schedules
-              .filter((s) => s.start_date === format(selectedDate, 'yyyy-MM-dd'))
-              .map((s) => (
-                <TouchableOpacity
-                  key={s.id}
-                  style={[styles.chip, scheduleId === s.id && styles.chipActive]}
-                  onPress={() => setScheduleId(s.id)}
-                >
-                  <Text
-                    style={[
-                      styles.chipText,
-                      scheduleId === s.id && styles.chipTextActive,
-                    ]}
-                  >
-                    {s.title}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-          </View>
+          <DropdownSelect
+            options={scheduleOptions}
+            selectedValue={scheduleId ? String(scheduleId) : 'none'}
+            onSelect={(val) => setScheduleId(val === 'none' ? undefined : Number(val))}
+            placeholder="연결 안 함"
+          />
         </View>
 
         {/* Memo */}
@@ -185,7 +158,7 @@ const ExpenseForm = forwardRef(
             value={memo}
             onChangeText={setMemo}
             placeholder="메모 (선택)"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={COLORS.gray400}
             multiline
             numberOfLines={3}
           />
@@ -204,20 +177,21 @@ const styles = StyleSheet.create({
   field: {},
   label: {
     fontSize: 14,
-    color: '#4B5563',
+    fontWeight: '500',
+    color: COLORS.gray600,
     marginBottom: 8,
   },
   input: {
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 12,
+    borderColor: COLORS.gray200,
+    borderRadius: RADIUS.xl,
     fontSize: 16,
-    color: '#000',
+    color: COLORS.gray900,
   },
   textArea: {
-    height: 80,
+    height: 88,
     textAlignVertical: 'top',
   },
   amountRow: {
@@ -226,29 +200,8 @@ const styles = StyleSheet.create({
   },
   currency: {
     fontSize: 16,
-    color: '#6B7280',
+    color: COLORS.gray500,
     marginLeft: 8,
-  },
-  chipRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: '#F3F4F6',
-  },
-  chipActive: {
-    backgroundColor: '#DBEAFE',
-  },
-  chipText: {
-    fontSize: 13,
-    color: '#4B5563',
-  },
-  chipTextActive: {
-    color: '#2563EB',
   },
   typeRow: {
     flexDirection: 'row',
@@ -256,23 +209,23 @@ const styles = StyleSheet.create({
   },
   typeButton: {
     flex: 1,
-    paddingVertical: 14,
-    borderRadius: 12,
-    backgroundColor: '#F3F4F6',
+    paddingVertical: 16,
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.gray100,
     alignItems: 'center',
   },
   typePersonalActive: {
-    backgroundColor: '#EC4899',
+    backgroundColor: COLORS.personal,
   },
   typeJointActive: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: COLORS.joint,
   },
   typeText: {
     fontSize: 15,
     fontWeight: '500',
-    color: '#4B5563',
+    color: COLORS.gray600,
   },
   typeTextActive: {
-    color: '#FFFFFF',
+    color: COLORS.white,
   },
 });

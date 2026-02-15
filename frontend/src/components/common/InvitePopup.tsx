@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { COLORS, GRADIENTS, RADIUS, SHADOWS } from '../../constants/theme';
 import type { InviteResponse } from '../../types/api';
 
 interface InvitePopupProps {
@@ -14,7 +16,7 @@ export default function InvitePopup({ invite, onAccept, onReject }: InvitePopupP
       <View style={styles.popup}>
         <View style={styles.content}>
           <Text style={styles.text}>
-            <Text style={styles.bold}>{invite.inviter_name}</Text>님이
+            <Text style={styles.bold}>{invite.inviter_nickname}</Text>님이
           </Text>
           <Text style={styles.text}>
             &apos;<Text style={styles.calendarName}>{invite.group_name}</Text>&apos;
@@ -26,8 +28,14 @@ export default function InvitePopup({ invite, onAccept, onReject }: InvitePopupP
           <TouchableOpacity style={styles.rejectButton} onPress={onReject}>
             <Text style={styles.rejectText}>거절</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.acceptButton} onPress={onAccept}>
-            <Text style={styles.acceptText}>수락</Text>
+          <TouchableOpacity onPress={onAccept} activeOpacity={0.8} style={styles.acceptWrapper}>
+            <LinearGradient
+              colors={[...GRADIENTS.primary.colors]}
+              start={GRADIENTS.primary.start}
+              end={GRADIENTS.primary.end}
+              style={styles.acceptButton}>
+              <Text style={styles.acceptText}>수락</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
       </View>
@@ -44,11 +52,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
   },
   popup: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 24,
+    backgroundColor: COLORS.white,
+    borderRadius: 28,
+    padding: 28,
     width: '100%',
     maxWidth: 340,
+    ...SHADOWS.elevated,
   },
   content: {
     alignItems: 'center',
@@ -57,13 +66,14 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 18,
     marginBottom: 4,
+    color: COLORS.gray900,
   },
   bold: {
     fontWeight: '700',
   },
   calendarName: {
     fontWeight: '700',
-    color: '#2563EB',
+    color: COLORS.primaryDark,
   },
   buttons: {
     flexDirection: 'row',
@@ -71,24 +81,25 @@ const styles = StyleSheet.create({
   },
   rejectButton: {
     flex: 1,
-    paddingVertical: 14,
-    backgroundColor: '#F3F4F6',
-    borderRadius: 12,
+    paddingVertical: 16,
+    backgroundColor: COLORS.gray100,
+    borderRadius: RADIUS.lg,
     alignItems: 'center',
   },
   rejectText: {
     fontWeight: '500',
-    color: '#374151',
+    color: COLORS.gray700,
+  },
+  acceptWrapper: {
+    flex: 1,
   },
   acceptButton: {
-    flex: 1,
-    paddingVertical: 14,
-    backgroundColor: '#7C3AED',
-    borderRadius: 12,
+    paddingVertical: 16,
+    borderRadius: RADIUS.lg,
     alignItems: 'center',
   },
   acceptText: {
     fontWeight: '500',
-    color: '#FFFFFF',
+    color: COLORS.white,
   },
 });

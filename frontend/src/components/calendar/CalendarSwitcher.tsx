@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { COLORS, RADIUS, SHADOWS } from '../../constants/theme';
 import type { GroupResponse } from '../../types/api';
 
 interface CalendarSwitcherProps {
@@ -31,7 +32,7 @@ export default function CalendarSwitcher({
         <Icon
           name={isOpen ? 'chevron-up' : 'chevron-down'}
           size={16}
-          color="#4B5563"
+          color={COLORS.gray600}
         />
       </TouchableOpacity>
 
@@ -53,13 +54,21 @@ export default function CalendarSwitcher({
                   <View>
                     <View style={styles.optionHeader}>
                       <Text style={styles.optionName}>{item.name}</Text>
+                      <View style={[
+                        styles.typeBadge,
+                        item.type === 'PERSONAL' ? styles.typeBadgePersonal : styles.typeBadgeShared,
+                      ]}>
+                        <Text style={[
+                          styles.typeBadgeText,
+                          item.type === 'PERSONAL' ? styles.typeBadgeTextPersonal : styles.typeBadgeTextShared,
+                        ]}>
+                          {item.type === 'PERSONAL' ? 'Personal' : 'Shared'}
+                        </Text>
+                      </View>
                       {item.id === currentGroupId && (
-                        <Icon name="checkmark" size={16} color="#2563EB" />
+                        <Icon name="checkmark" size={16} color={COLORS.primaryDark} />
                       )}
                     </View>
-                    <Text style={styles.optionType}>
-                      {item.type === 'PERSONAL' ? '개인' : '공유'}
-                    </Text>
                   </View>
                 </TouchableOpacity>
               )}
@@ -78,12 +87,12 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 8,
+    borderRadius: RADIUS.sm,
   },
   triggerText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
+    fontSize: 17,
+    fontWeight: '700',
+    color: COLORS.gray900,
     maxWidth: 180,
   },
   backdrop: {
@@ -94,21 +103,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   dropdown: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 8,
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.xl,
+    ...SHADOWS.elevated,
     maxHeight: 300,
     overflow: 'hidden',
   },
   option: {
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: COLORS.gray100,
   },
   optionHeader: {
     flexDirection: 'row',
@@ -118,11 +123,27 @@ const styles = StyleSheet.create({
   optionName: {
     fontSize: 15,
     fontWeight: '500',
-    color: '#111827',
+    color: COLORS.gray900,
   },
-  optionType: {
-    fontSize: 13,
-    color: '#6B7280',
-    marginTop: 2,
+  typeBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+    borderRadius: RADIUS.full,
+  },
+  typeBadgePersonal: {
+    backgroundColor: COLORS.personalBadgeBg,
+  },
+  typeBadgeShared: {
+    backgroundColor: COLORS.jointBadgeBg,
+  },
+  typeBadgeText: {
+    fontSize: 11,
+    fontWeight: '500',
+  },
+  typeBadgeTextPersonal: {
+    color: COLORS.personalBadgeText,
+  },
+  typeBadgeTextShared: {
+    color: COLORS.jointBadgeText,
   },
 });

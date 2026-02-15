@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import CalendarScreen from '../screens/calendar/CalendarScreen';
 import StatisticsScreen from '../screens/statistics/StatisticsScreen';
 import AssetsScreen from '../screens/assets/AssetsScreen';
+import { COLORS } from '../constants/theme';
 import type { MainTabParamList } from '../types/navigation';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -19,9 +20,9 @@ export default function MainTabNavigator() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#2563EB',
-        tabBarInactiveTintColor: '#9CA3AF',
-        tabBarStyle: { height: 80, paddingBottom: 20, paddingTop: 8, borderTopColor: '#E5E7EB' },
+        tabBarActiveTintColor: COLORS.primary,
+        tabBarInactiveTintColor: COLORS.gray400,
+        tabBarStyle: { height: 80, paddingBottom: 20, paddingTop: 8, borderTopColor: COLORS.gray200 },
         tabBarLabelStyle: { fontSize: 11 },
       }}
     >

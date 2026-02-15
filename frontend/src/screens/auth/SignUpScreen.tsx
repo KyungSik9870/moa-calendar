@@ -10,6 +10,8 @@ import {
   ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { COLORS } from '../../constants/theme';
+import GradientButton from '../../components/common/GradientButton';
 import type { AuthScreenProps } from '../../types/navigation';
 
 export default function SignUpScreen({ navigation }: AuthScreenProps<'SignUp'>) {
@@ -34,7 +36,7 @@ export default function SignUpScreen({ navigation }: AuthScreenProps<'SignUp'>) 
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Icon name="chevron-back" size={24} color="#000" />
+          <Icon name="chevron-back" size={24} color={COLORS.gray900} />
         </TouchableOpacity>
       </View>
 
@@ -50,7 +52,7 @@ export default function SignUpScreen({ navigation }: AuthScreenProps<'SignUp'>) 
               onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={COLORS.gray400}
             />
             {email.length > 0 && !isEmailValid && (
               <Text style={styles.error}>올바른 이메일 형식이 아닙니다</Text>
@@ -64,7 +66,7 @@ export default function SignUpScreen({ navigation }: AuthScreenProps<'SignUp'>) 
               value={password}
               onChangeText={setPassword}
               secureTextEntry
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={COLORS.gray400}
             />
             {password.length > 0 && !isPasswordValid && (
               <Text style={styles.error}>8자 이상 입력해주세요</Text>
@@ -78,7 +80,7 @@ export default function SignUpScreen({ navigation }: AuthScreenProps<'SignUp'>) 
               value={passwordConfirm}
               onChangeText={setPasswordConfirm}
               secureTextEntry
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={COLORS.gray400}
             />
             {passwordConfirm.length > 0 && !isPasswordMatch && (
               <Text style={styles.error}>비밀번호가 일치하지 않습니다</Text>
@@ -92,7 +94,7 @@ export default function SignUpScreen({ navigation }: AuthScreenProps<'SignUp'>) 
               value={nickname}
               onChangeText={setNickname}
               maxLength={10}
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={COLORS.gray400}
             />
             {nickname.length > 0 && !isNicknameValid && (
               <Text style={styles.error}>2~10자로 입력해주세요</Text>
@@ -102,51 +104,41 @@ export default function SignUpScreen({ navigation }: AuthScreenProps<'SignUp'>) 
       </ScrollView>
 
       <View style={styles.bottom}>
-        <TouchableOpacity
-          style={[styles.submitButton, !isValid && styles.submitButtonDisabled]}
+        <GradientButton
+          title="다음"
           onPress={handleNext}
           disabled={!isValid}
-        >
-          <Text style={styles.submitButtonText}>다음</Text>
-        </TouchableOpacity>
+        />
       </View>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFFFF' },
+  container: { flex: 1, backgroundColor: COLORS.white },
   header: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     paddingVertical: 16,
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: COLORS.gray100,
   },
   backButton: { padding: 8, marginLeft: -8 },
   content: { flex: 1, paddingHorizontal: 32, paddingTop: 32 },
-  title: { fontSize: 30, fontWeight: '500', marginBottom: 32, color: '#000' },
+  title: { fontSize: 28, fontWeight: '700', marginBottom: 32, color: COLORS.gray900 },
   form: { gap: 20 },
   field: {},
-  label: { fontSize: 14, color: '#4B5563', marginBottom: 8 },
+  label: { fontSize: 14, color: COLORS.gray600, marginBottom: 8 },
   input: {
     paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 12,
-    fontSize: 16,
-    color: '#000',
-  },
-  error: { fontSize: 12, color: '#EF4444', marginTop: 4 },
-  bottom: { paddingHorizontal: 32, paddingBottom: 32 },
-  submitButton: {
-    backgroundColor: '#7C3AED',
     paddingVertical: 16,
-    borderRadius: 16,
-    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.gray200,
+    borderRadius: 20,
+    fontSize: 16,
+    color: COLORS.gray900,
   },
-  submitButtonDisabled: { opacity: 0.5 },
-  submitButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '500' },
+  error: { fontSize: 12, color: COLORS.danger, marginTop: 4 },
+  bottom: { paddingHorizontal: 32, paddingBottom: 32 },
 });

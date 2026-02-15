@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Modal } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, ScrollView, Modal } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -10,6 +10,7 @@ import CalendarSwitcher from '../../components/calendar/CalendarSwitcher';
 import InputModal from '../schedule/InputModal';
 import SideMenu from '../menu/SideMenu';
 import InvitePopup from '../../components/common/InvitePopup';
+import { COLORS } from '../../constants/theme';
 import { useCalendarStore } from '../../store/calendarStore';
 import { useAuthStore } from '../../store/authStore';
 import { groupsApi } from '../../api/groups';
@@ -20,8 +21,6 @@ import { useQuery } from '@tanstack/react-query';
 import type { GroupResponse, InviteResponse } from '../../types/api';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../../types/navigation';
-
-type Filter = 'all' | 'me' | 'joint';
 
 export default function CalendarScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -116,7 +115,7 @@ export default function CalendarScreen() {
           onGroupChange={setSelectedGroupId}
         />
         <TouchableOpacity onPress={() => setShowMenu(true)} style={styles.menuButton}>
-          <Icon name="menu" size={24} color="#000" />
+          <Icon name="menu" size={24} color={COLORS.gray900} />
         </TouchableOpacity>
       </View>
 
@@ -190,16 +189,16 @@ export default function CalendarScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: COLORS.white,
   },
   header: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     paddingVertical: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: COLORS.gray100,
   },
   menuButton: {
     padding: 8,

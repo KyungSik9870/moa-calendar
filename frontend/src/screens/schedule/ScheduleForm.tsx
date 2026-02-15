@@ -4,7 +4,9 @@ import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { schedulesApi } from '../../api/schedules';
 import { SCHEDULE_CATEGORIES, REPEAT_OPTIONS } from '../../constants/colors';
+import { COLORS, RADIUS } from '../../constants/theme';
 import { useQueryClient } from '@tanstack/react-query';
+import DropdownSelect from '../../components/common/DropdownSelect';
 
 interface ScheduleFormProps {
   selectedDate: Date;
@@ -61,7 +63,7 @@ const ScheduleForm = forwardRef(({ selectedDate, groupId }: ScheduleFormProps, r
           value={title}
           onChangeText={setTitle}
           placeholder="일정 제목"
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={COLORS.gray400}
         />
       </View>
 
@@ -94,7 +96,7 @@ const ScheduleForm = forwardRef(({ selectedDate, groupId }: ScheduleFormProps, r
               value={startTime}
               onChangeText={setStartTime}
               placeholder="19:00"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={COLORS.gray400}
             />
           </View>
           <View style={styles.field}>
@@ -104,36 +106,21 @@ const ScheduleForm = forwardRef(({ selectedDate, groupId }: ScheduleFormProps, r
               value={endTime}
               onChangeText={setEndTime}
               placeholder="20:00"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={COLORS.gray400}
             />
           </View>
         </>
       )}
 
-      {/* Category */}
+      {/* Category - Dropdown */}
       <View style={styles.field}>
         <Text style={styles.label}>카테고리</Text>
-        <View style={styles.chipRow}>
-          {SCHEDULE_CATEGORIES.map((cat) => (
-            <TouchableOpacity
-              key={cat.value}
-              style={[
-                styles.categoryChip,
-                category === cat.value && styles.categoryChipActive,
-              ]}
-              onPress={() => setCategory(cat.value)}
-            >
-              <Text
-                style={[
-                  styles.categoryChipText,
-                  category === cat.value && styles.categoryChipTextActive,
-                ]}
-              >
-                {cat.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <DropdownSelect
+          options={SCHEDULE_CATEGORIES}
+          selectedValue={category}
+          onSelect={setCategory}
+          placeholder="카테고리 선택"
+        />
       </View>
 
       {/* Type Toggle */}
@@ -175,30 +162,15 @@ const ScheduleForm = forwardRef(({ selectedDate, groupId }: ScheduleFormProps, r
         </View>
       </View>
 
-      {/* Repeat */}
+      {/* Repeat - Dropdown */}
       <View style={styles.field}>
         <Text style={styles.label}>반복</Text>
-        <View style={styles.chipRow}>
-          {REPEAT_OPTIONS.map((opt) => (
-            <TouchableOpacity
-              key={opt.value}
-              style={[
-                styles.categoryChip,
-                repeatType === opt.value && styles.categoryChipActive,
-              ]}
-              onPress={() => setRepeatType(opt.value)}
-            >
-              <Text
-                style={[
-                  styles.categoryChipText,
-                  repeatType === opt.value && styles.categoryChipTextActive,
-                ]}
-              >
-                {opt.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <DropdownSelect
+          options={REPEAT_OPTIONS}
+          selectedValue={repeatType}
+          onSelect={setRepeatType}
+          placeholder="반복 설정"
+        />
       </View>
 
       {/* Memo */}
@@ -209,7 +181,7 @@ const ScheduleForm = forwardRef(({ selectedDate, groupId }: ScheduleFormProps, r
           value={memo}
           onChangeText={setMemo}
           placeholder="메모 (선택)"
-          placeholderTextColor="#9CA3AF"
+          placeholderTextColor={COLORS.gray400}
           multiline
           numberOfLines={3}
         />
@@ -227,33 +199,34 @@ const styles = StyleSheet.create({
   field: {},
   label: {
     fontSize: 14,
-    color: '#4B5563',
+    fontWeight: '500',
+    color: COLORS.gray600,
     marginBottom: 8,
   },
   input: {
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 12,
+    borderColor: COLORS.gray200,
+    borderRadius: RADIUS.xl,
     fontSize: 16,
-    color: '#000',
+    color: COLORS.gray900,
   },
   textArea: {
-    height: 80,
+    height: 88,
     textAlignVertical: 'top',
   },
   readOnly: {
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 12,
-    backgroundColor: '#F9FAFB',
+    borderColor: COLORS.gray200,
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.gray50,
   },
   readOnlyText: {
     fontSize: 16,
-    color: '#374151',
+    color: COLORS.gray700,
   },
   toggleRow: {
     flexDirection: 'row',
@@ -261,45 +234,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   toggle: {
-    width: 48,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#D1D5DB',
+    width: 52,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: COLORS.gray300,
     justifyContent: 'center',
     paddingHorizontal: 2,
   },
   toggleActive: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: COLORS.primary,
   },
   toggleThumb: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: '#FFFFFF',
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: COLORS.white,
   },
   toggleThumbActive: {
     transform: [{ translateX: 24 }],
-  },
-  chipRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  categoryChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: '#F3F4F6',
-  },
-  categoryChipActive: {
-    backgroundColor: '#DBEAFE',
-  },
-  categoryChipText: {
-    fontSize: 13,
-    color: '#4B5563',
-  },
-  categoryChipTextActive: {
-    color: '#2563EB',
   },
   typeRow: {
     flexDirection: 'row',
@@ -307,23 +259,23 @@ const styles = StyleSheet.create({
   },
   typeButton: {
     flex: 1,
-    paddingVertical: 14,
-    borderRadius: 12,
-    backgroundColor: '#F3F4F6',
+    paddingVertical: 16,
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.gray100,
     alignItems: 'center',
   },
   typePersonalActive: {
-    backgroundColor: '#EC4899',
+    backgroundColor: COLORS.personal,
   },
   typeJointActive: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: COLORS.joint,
   },
   typeText: {
     fontSize: 15,
     fontWeight: '500',
-    color: '#4B5563',
+    color: COLORS.gray600,
   },
   typeTextActive: {
-    color: '#FFFFFF',
+    color: COLORS.white,
   },
 });

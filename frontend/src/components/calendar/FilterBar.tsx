@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { COLORS, RADIUS } from '../../constants/theme';
 
 type FilterType = 'all' | 'me' | 'joint';
 
@@ -40,27 +41,30 @@ export default function FilterBar({ activeFilter, onFilterChange, isSharedGroup 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     paddingVertical: 12,
     gap: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: COLORS.gray100,
   },
   chip: {
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: RADIUS.full,
+    backgroundColor: COLORS.gray100,
+    borderWidth: 1,
+    borderColor: COLORS.gray200,
   },
   chipActive: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
   },
   chipText: {
     fontSize: 14,
-    fontWeight: '500',
-    color: '#4B5563',
+    fontWeight: '600',
+    color: COLORS.gray600,
   },
   chipTextActive: {
-    color: '#FFFFFF',
+    color: COLORS.white,
   },
 });

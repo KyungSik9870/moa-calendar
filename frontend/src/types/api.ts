@@ -4,8 +4,7 @@ export interface SignUpRequest {
   password: string;
   nickname: string;
   color_code: string;
-  personal_asset_color?: string;
-  calendar_name: string;
+  profile_image_url?: string;
 }
 
 export interface LoginRequest {
@@ -13,9 +12,14 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface TokenResponse {
+  access_token: string;
+  token_type: string;
+}
+
 export interface AuthResponse {
-  token: string;
   user: UserResponse;
+  token: TokenResponse;
 }
 
 // User
@@ -33,6 +37,7 @@ export interface UpdateUserRequest {
   nickname?: string;
   color_code?: string;
   personal_asset_color?: string;
+  profile_image_url?: string;
 }
 
 export interface UserSearchResponse {
@@ -51,6 +56,7 @@ export interface GroupResponse {
   joint_asset_color: string;
   budget_start_day: number;
   created_at: string;
+  updated_at: string;
 }
 
 export interface CreateGroupRequest {
@@ -69,7 +75,6 @@ export interface GroupMemberResponse {
   id: number;
   user_id: number;
   nickname: string;
-  email: string;
   color_code: string;
   role: 'HOST' | 'GUEST';
   status: 'INVITED' | 'ACCEPTED';
@@ -78,14 +83,14 @@ export interface GroupMemberResponse {
 
 // Invite
 export interface InviteRequest {
-  invitee_email: string;
+  email: string;
 }
 
 export interface InviteResponse {
   id: number;
   group_id: number;
   group_name: string;
-  inviter_name: string;
+  inviter_nickname: string;
   invitee_email: string;
   status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
   created_at: string;
@@ -97,7 +102,7 @@ export interface ScheduleResponse {
   group_id: number;
   user_id: number;
   user_nickname: string;
-  user_color: string;
+  user_color_code: string;
   title: string;
   start_date: string;
   end_date: string | null;
@@ -110,6 +115,7 @@ export interface ScheduleResponse {
   repeat_type: 'NONE' | 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY';
   repeat_group_id: number | null;
   created_at: string;
+  updated_at: string;
 }
 
 export interface CreateScheduleRequest {
@@ -127,14 +133,14 @@ export interface CreateScheduleRequest {
 }
 
 export interface UpdateScheduleRequest {
-  title?: string;
-  start_date?: string;
+  title: string;
+  start_date: string;
   end_date?: string;
   start_time?: string;
   end_time?: string;
-  is_all_day?: boolean;
-  asset_type?: string;
-  category?: string;
+  is_all_day: boolean;
+  asset_type: 'PERSONAL' | 'JOINT';
+  category: string;
   memo?: string;
 }
 
@@ -144,6 +150,7 @@ export interface TransactionResponse {
   group_id: number;
   user_id: number;
   user_nickname: string;
+  user_color_code: string;
   amount: number;
   transaction_type: 'EXPENSE' | 'INCOME';
   asset_type: 'PERSONAL' | 'JOINT';
@@ -153,7 +160,9 @@ export interface TransactionResponse {
   date: string;
   description: string | null;
   schedule_id: number | null;
+  schedule_title: string | null;
   created_at: string;
+  updated_at: string;
 }
 
 export interface CreateTransactionRequest {
@@ -168,27 +177,29 @@ export interface CreateTransactionRequest {
 }
 
 export interface UpdateTransactionRequest {
-  amount?: number;
-  transaction_type?: string;
-  asset_type?: string;
-  category_name?: string;
+  amount: number;
+  transaction_type: 'EXPENSE' | 'INCOME';
+  asset_type: 'PERSONAL' | 'JOINT';
+  category_name: string;
   asset_source_id?: number;
-  date?: string;
+  date: string;
   description?: string;
   schedule_id?: number;
 }
 
 export interface TransactionSummaryResponse {
-  total_income: number;
+  start_date: string;
+  end_date: string;
   total_expense: number;
+  total_income: number;
   balance: number;
-  category_summaries: CategorySummary[];
+  category_breakdown: CategoryBreakdownItem[];
 }
 
-export interface CategorySummary {
+export interface CategoryBreakdownItem {
   category_name: string;
-  total_amount: number;
-  count: number;
+  transaction_type: 'EXPENSE' | 'INCOME';
+  total: number;
 }
 
 // Asset Source
@@ -199,6 +210,7 @@ export interface AssetSourceResponse {
   type: 'CASH' | 'CARD' | 'ACCOUNT';
   description: string | null;
   created_at: string;
+  updated_at: string;
 }
 
 export interface CreateAssetSourceRequest {
@@ -208,8 +220,7 @@ export interface CreateAssetSourceRequest {
 }
 
 export interface UpdateAssetSourceRequest {
-  name?: string;
-  type?: string;
+  name: string;
   description?: string;
 }
 
@@ -222,6 +233,8 @@ export interface CategoryResponse {
   type: 'EXPENSE' | 'INCOME';
   is_default: boolean;
   sort_order: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface CreateCategoryRequest {
@@ -231,35 +244,58 @@ export interface CreateCategoryRequest {
 }
 
 export interface UpdateCategoryRequest {
-  name?: string;
+  name: string;
   icon?: string;
-  sort_order?: number;
 }
 
 // Statistics
 export interface BudgetOverviewResponse {
-  total_budget: number;
-  used_amount: number;
-  remaining_amount: number;
-  usage_rate: number;
+  start_date: string;
+  end_date: string;
+  budget_start_day: number;
+  total_expense: number;
+  total_income: number;
+  balance: number;
 }
 
 export interface CategoryBreakdownResponse {
+  start_date: string;
+  end_date: string;
+  total_expense: number;
+  total_income: number;
+  items: CategoryBreakdownItemResponse[];
+}
+
+export interface CategoryBreakdownItemResponse {
   category_name: string;
-  amount: number;
-  percentage: number;
+  transaction_type: 'EXPENSE' | 'INCOME';
+  total: number;
 }
 
 export interface DailyTrendResponse {
+  start_date: string;
+  end_date: string;
+  items: DailyTrendItemResponse[];
+}
+
+export interface DailyTrendItemResponse {
   date: string;
-  amount: number;
+  transaction_type: 'EXPENSE' | 'INCOME';
+  total: number;
 }
 
 export interface MemberComparisonResponse {
+  start_date: string;
+  end_date: string;
+  items: MemberComparisonItemResponse[];
+}
+
+export interface MemberComparisonItemResponse {
   user_id: number;
   nickname: string;
   color_code: string;
-  total_expense: number;
+  transaction_type: 'EXPENSE' | 'INCOME';
+  total: number;
 }
 
 // Common

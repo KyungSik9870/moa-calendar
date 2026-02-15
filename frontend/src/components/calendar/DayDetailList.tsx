@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { CATEGORY_EMOJI } from '../../constants/colors';
+import { COLORS, RADIUS, SHADOWS } from '../../constants/theme';
 import type { ScheduleResponse, TransactionResponse } from '../../types/api';
 
 interface DayDetailListProps {
@@ -35,7 +36,7 @@ export default function DayDetailList({
           {format(selectedDate, 'M월 d일 EEEE', { locale: ko })}
         </Text>
         <TouchableOpacity onPress={onAddClick} style={styles.addButton}>
-          <Icon name="add" size={20} color="#FFFFFF" />
+          <Icon name="add" size={20} color={COLORS.white} />
         </TouchableOpacity>
       </View>
 
@@ -43,7 +44,7 @@ export default function DayDetailList({
       {daySchedules.length > 0 && (
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Icon name="calendar-outline" size={16} color="#6B7280" />
+            <Icon name="calendar-outline" size={16} color={COLORS.gray500} />
             <Text style={styles.sectionTitle}>일정</Text>
           </View>
           {daySchedules.map((schedule) => (
@@ -89,7 +90,7 @@ export default function DayDetailList({
       {dayTransactions.length > 0 && (
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Icon name="wallet-outline" size={16} color="#6B7280" />
+            <Icon name="wallet-outline" size={16} color={COLORS.gray500} />
             <Text style={styles.sectionTitle}>가계부</Text>
           </View>
           {dayTransactions.map((transaction) => (
@@ -149,8 +150,8 @@ export default function DayDetailList({
 const styles = StyleSheet.create({
   container: {
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-    backgroundColor: '#FFFFFF',
+    borderTopColor: COLORS.gray200,
+    backgroundColor: COLORS.white,
   },
   header: {
     flexDirection: 'row',
@@ -159,18 +160,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: COLORS.gray100,
   },
   headerTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#000',
+    fontSize: 17,
+    fontWeight: '600',
+    color: COLORS.gray900,
   },
   addButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#3B82F6',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: COLORS.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -185,19 +186,23 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   sectionTitle: {
-    fontSize: 14,
-    color: '#6B7280',
+    fontSize: 13,
+    fontWeight: '600',
+    color: COLORS.gray500,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   itemCard: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 12,
-    backgroundColor: '#FFFFFF',
+    padding: 16,
+    backgroundColor: COLORS.white,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 12,
+    borderColor: COLORS.gray200,
+    borderRadius: RADIUS.xl,
     marginBottom: 8,
+    ...SHADOWS.card,
   },
   itemLeft: {
     flexDirection: 'row',
@@ -206,46 +211,47 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   emoji: {
-    fontSize: 24,
+    fontSize: 28,
   },
   itemTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#000',
+    fontSize: 15,
+    fontWeight: '600',
+    color: COLORS.gray900,
   },
   itemSubtitle: {
     fontSize: 12,
-    color: '#6B7280',
+    color: COLORS.gray500,
   },
   badge: {
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 4,
+    borderRadius: RADIUS.full,
   },
   badgeJoint: {
-    backgroundColor: '#DBEAFE',
+    backgroundColor: COLORS.jointBadgeBg,
   },
   badgePersonal: {
-    backgroundColor: '#FCE7F3',
+    backgroundColor: COLORS.personalBadgeBg,
   },
   badgeText: {
     fontSize: 12,
+    fontWeight: '500',
   },
   badgeTextJoint: {
-    color: '#1D4ED8',
+    color: COLORS.jointBadgeText,
   },
   badgeTextPersonal: {
-    color: '#BE185D',
+    color: COLORS.personalBadgeText,
   },
   amount: {
     fontSize: 15,
     fontWeight: '500',
   },
   amountExpense: {
-    color: '#DC2626',
+    color: COLORS.expense,
   },
   amountIncome: {
-    color: '#16A34A',
+    color: COLORS.income,
   },
   emptyState: {
     paddingVertical: 40,
@@ -253,6 +259,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 14,
-    color: '#9CA3AF',
+    color: COLORS.gray400,
   },
 });

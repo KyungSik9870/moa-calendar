@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, Alert, FlatList } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { usersApi } from '../../api/users';
 import { groupsApi } from '../../api/groups';
+import { COLORS, GRADIENTS, RADIUS } from '../../constants/theme';
 import type { RootScreenProps } from '../../types/navigation';
 import type { UserSearchResponse } from '../../types/api';
 
@@ -36,7 +38,7 @@ export default function MemberInviteScreen({ route, navigation }: RootScreenProp
   const handleInvite = async () => {
     if (!searchResult) return;
     try {
-      await groupsApi.invite(groupId, { invitee_email: searchResult.email });
+      await groupsApi.invite(groupId, { email: searchResult.email });
       queryClient.invalidateQueries({ queryKey: ['pendingInvites'] });
       Alert.alert('완료', `${searchResult.nickname}님에게 초대를 보냈습니다.`);
       setSearchResult(null);
@@ -50,24 +52,37 @@ export default function MemberInviteScreen({ route, navigation }: RootScreenProp
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="chevron-back" size={24} color="#374151" />
+          <Icon name="chevron-back" size={24} color={COLORS.gray700} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>멤버 초대</Text>
         <View style={{ width: 24 }} />
       </View>
 
+      {/* Search Row */}
       <View style={styles.searchSection}>
         <View style={styles.searchRow}>
-          <TextInput
-            style={styles.searchInput}
-            value={email}
-            onChangeText={setEmail}
-            placeholder="이메일로 검색"
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-          <TouchableOpacity style={styles.searchBtn} onPress={handleSearch}>
-            <Icon name="search" size={20} color="#FFFFFF" />
+          <View style={styles.searchInputWrapper}>
+            <Icon name="search" size={18} color={COLORS.gray400} />
+            <TextInput
+              style={styles.searchInput}
+              value={email}
+              onChangeText={setEmail}
+              placeholder="이메일로 검색"
+              placeholderTextColor={COLORS.gray400}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              onSubmitEditing={handleSearch}
+            />
+          </View>
+          <TouchableOpacity onPress={searchResult ? handleInvite : handleSearch} activeOpacity={0.8}>
+            <LinearGradient
+              colors={[...GRADIENTS.primary.colors]}
+              start={GRADIENTS.primary.start}
+              end={GRADIENTS.primary.end}
+              style={styles.inviteBtn}
+            >
+              <Text style={styles.inviteBtnText}>{searchResult ? '초대 보내기' : '검색'}</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
 
@@ -84,25 +99,33 @@ export default function MemberInviteScreen({ route, navigation }: RootScreenProp
                 <Text style={styles.resultEmail}>{searchResult.email}</Text>
               </View>
             </View>
-            <TouchableOpacity style={styles.inviteBtn} onPress={handleInvite}>
-              <Text style={styles.inviteBtnText}>초대</Text>
-            </TouchableOpacity>
           </View>
         )}
       </View>
 
+      {/* Invite Status */}
       <View style={styles.pendingSection}>
-        <Text style={styles.sectionTitle}>대기 중인 초대</Text>
+        <Text style={styles.sectionTitle}>초대 현황</Text>
         <FlatList
           data={pendingInvites}
           keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => (
             <View style={styles.pendingCard}>
               <Text style={styles.pendingEmail}>{item.invitee_email}</Text>
-              <Text style={styles.pendingStatus}>대기중</Text>
+              <View style={[
+                styles.statusBadge,
+                item.status === 'ACCEPTED' ? styles.statusAccepted : styles.statusPending,
+              ]}>
+                <Text style={[
+                  styles.statusText,
+                  item.status === 'ACCEPTED' ? styles.statusAcceptedText : styles.statusPendingText,
+                ]}>
+                  {item.status === 'ACCEPTED' ? '수락됨' : '대기 중'}
+                </Text>
+              </View>
             </View>
           )}
-          ListEmptyComponent={<Text style={styles.emptyText}>대기 중인 초대가 없습니다.</Text>}
+          ListEmptyComponent={<Text style={styles.emptyText}>초대 내역이 없습니다.</Text>}
         />
       </View>
     </View>
@@ -110,26 +133,94 @@ export default function MemberInviteScreen({ route, navigation }: RootScreenProp
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFFFF' },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
-  headerTitle: { fontSize: 18, fontWeight: '600' },
-  searchSection: { padding: 24, gap: 12, borderBottomWidth: 8, borderBottomColor: '#F3F4F6' },
+  container: { flex: 1, backgroundColor: COLORS.white },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.gray100,
+  },
+  headerTitle: { fontSize: 18, fontWeight: '700', color: COLORS.gray900 },
+
+  // Search
+  searchSection: {
+    padding: 24,
+    gap: 12,
+    borderBottomWidth: 8,
+    borderBottomColor: COLORS.gray100,
+  },
   searchRow: { flexDirection: 'row', gap: 8 },
-  searchInput: { flex: 1, borderWidth: 1, borderColor: '#D1D5DB', borderRadius: 12, paddingHorizontal: 16, paddingVertical: 12, fontSize: 16 },
-  searchBtn: { width: 48, backgroundColor: '#2563EB', borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
-  errorText: { fontSize: 14, color: '#EF4444' },
-  resultCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 12, backgroundColor: '#F9FAFB' },
+  searchInputWrapper: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    borderWidth: 1,
+    borderColor: COLORS.gray200,
+    borderRadius: RADIUS.xl,
+    paddingHorizontal: 16,
+  },
+  searchInput: {
+    flex: 1,
+    paddingVertical: 14,
+    fontSize: 15,
+    color: COLORS.gray900,
+  },
+  inviteBtn: {
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    borderRadius: RADIUS.xl,
+  },
+  inviteBtnText: { fontSize: 14, fontWeight: '600', color: COLORS.white },
+  errorText: { fontSize: 14, color: COLORS.danger },
+
+  // Result
+  resultCard: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderWidth: 1,
+    borderColor: COLORS.gray200,
+    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.gray50,
+  },
   resultLeft: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  resultAvatar: { width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
-  resultAvatarText: { fontSize: 16, fontWeight: '500', color: '#FFFFFF' },
-  resultName: { fontSize: 15, fontWeight: '500' },
-  resultEmail: { fontSize: 13, color: '#6B7280' },
-  inviteBtn: { paddingHorizontal: 16, paddingVertical: 8, backgroundColor: '#2563EB', borderRadius: 8 },
-  inviteBtnText: { fontSize: 14, fontWeight: '500', color: '#FFFFFF' },
+  resultAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  resultAvatarText: { fontSize: 16, fontWeight: '500', color: COLORS.white },
+  resultName: { fontSize: 15, fontWeight: '500', color: COLORS.gray900 },
+  resultEmail: { fontSize: 13, color: COLORS.gray500 },
+
+  // Pending
   pendingSection: { flex: 1, padding: 24 },
-  sectionTitle: { fontSize: 16, fontWeight: '600', marginBottom: 16 },
-  pendingCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1, borderBottomColor: '#F3F4F6' },
-  pendingEmail: { fontSize: 15 },
-  pendingStatus: { fontSize: 13, color: '#F59E0B', fontWeight: '500' },
-  emptyText: { fontSize: 14, color: '#9CA3AF', textAlign: 'center', paddingTop: 32 },
+  sectionTitle: { fontSize: 16, fontWeight: '600', color: COLORS.gray900, marginBottom: 16 },
+  pendingCard: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.gray100,
+  },
+  pendingEmail: { fontSize: 15, color: COLORS.gray700 },
+  statusBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: RADIUS.full,
+  },
+  statusAccepted: { backgroundColor: '#DCFCE7' },
+  statusPending: { backgroundColor: '#FEF9C3' },
+  statusText: { fontSize: 12, fontWeight: '500' },
+  statusAcceptedText: { color: '#15803D' },
+  statusPendingText: { color: '#A16207' },
+  emptyText: { fontSize: 14, color: COLORS.gray400, textAlign: 'center', paddingTop: 32 },
 });

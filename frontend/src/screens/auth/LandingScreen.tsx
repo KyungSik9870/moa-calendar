@@ -1,15 +1,21 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { GRADIENTS, COLORS } from '../../constants/theme';
 import type { AuthScreenProps } from '../../types/navigation';
 
 export default function LandingScreen({ navigation }: AuthScreenProps<'Landing'>) {
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={[...GRADIENTS.landing.colors]}
+      start={GRADIENTS.landing.start}
+      end={GRADIENTS.landing.end}
+      style={styles.container}>
       <View style={styles.content}>
         <View style={styles.logoContainer}>
           <View style={styles.iconCircle}>
-            <Icon name="calendar" size={56} color="#FFFFFF" />
+            <Icon name="calendar" size={56} color={COLORS.white} />
           </View>
           <Text style={styles.title}>모아 캘린더</Text>
           <Text style={styles.subtitle}>관계와 맥락을 담은 자산 관리</Text>
@@ -24,14 +30,13 @@ export default function LandingScreen({ navigation }: AuthScreenProps<'Landing'>
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#7C3AED',
   },
   content: {
     flex: 1,
@@ -44,9 +49,9 @@ const styles = StyleSheet.create({
     marginBottom: 48,
   },
   iconCircle: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     backgroundColor: 'rgba(255,255,255,0.2)',
     justifyContent: 'center',
     alignItems: 'center',
@@ -54,7 +59,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 36,
-    fontWeight: '500',
+    fontWeight: '700',
     color: '#FFFFFF',
     marginBottom: 8,
   },
@@ -70,8 +75,8 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     backgroundColor: '#FFFFFF',
-    paddingVertical: 16,
-    borderRadius: 16,
+    paddingVertical: 18,
+    borderRadius: 20,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -80,14 +85,14 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   loginButtonText: {
-    color: '#2563EB',
+    color: COLORS.primaryDark,
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   signUpButton: {
     backgroundColor: 'rgba(255,255,255,0.2)',
-    paddingVertical: 16,
-    borderRadius: 16,
+    paddingVertical: 18,
+    borderRadius: 20,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.3)',
@@ -95,6 +100,6 @@ const styles = StyleSheet.create({
   signUpButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
   },
 });

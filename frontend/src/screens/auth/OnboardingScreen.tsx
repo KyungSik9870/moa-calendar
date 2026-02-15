@@ -12,6 +12,8 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { authApi } from '../../api/auth';
 import { useAuthStore } from '../../store/authStore';
 import { USER_COLORS } from '../../constants/colors';
+import { COLORS, RADIUS } from '../../constants/theme';
+import GradientButton from '../../components/common/GradientButton';
 import type { AuthScreenProps } from '../../types/navigation';
 
 export default function OnboardingScreen({ route }: AuthScreenProps<'Onboarding'>) {
@@ -20,6 +22,8 @@ export default function OnboardingScreen({ route }: AuthScreenProps<'Onboarding'
   const [calendarName, setCalendarName] = useState(`${nickname}의 하루`);
   const [loading, setLoading] = useState(false);
   const { setAuth } = useAuthStore();
+
+  const selectedColorName = USER_COLORS.find(c => c.value === selectedColor)?.name || '';
 
   const handleComplete = async () => {
     if (!calendarName.trim()) return;
@@ -30,9 +34,8 @@ export default function OnboardingScreen({ route }: AuthScreenProps<'Onboarding'
         password,
         nickname,
         color_code: selectedColor,
-        calendar_name: calendarName,
       });
-      await setAuth(response.token, response.user);
+      await setAuth(response.token.access_token, response.user);
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : '회원가입에 실패했습니다';
       Alert.alert('오류', msg);
@@ -47,25 +50,32 @@ export default function OnboardingScreen({ route }: AuthScreenProps<'Onboarding'
         <Text style={styles.title}>프로필을 설정해주세요</Text>
 
         <View style={styles.profileSection}>
-          <TouchableOpacity style={styles.profileImage}>
-            <Icon name="camera" size={40} color="#9CA3AF" />
-          </TouchableOpacity>
+          <View style={[styles.profileImage, { backgroundColor: selectedColor }]}>
+            <Text style={styles.profileInitial}>{nickname.charAt(0)}</Text>
+          </View>
           <Text style={styles.profileHint}>프로필 이미지 (선택)</Text>
         </View>
 
         <View style={styles.colorSection}>
           <Text style={styles.label}>내 색상을 선택해주세요</Text>
+          {selectedColorName ? (
+            <Text style={styles.selectedColorName}>{selectedColorName}</Text>
+          ) : null}
           <View style={styles.colorGrid}>
             {USER_COLORS.map((color) => (
               <TouchableOpacity
                 key={color.value}
                 style={[
-                  styles.colorButton,
+                  styles.colorBtn,
                   { backgroundColor: color.value },
-                  selectedColor === color.value && styles.colorSelected,
+                  selectedColor === color.value && styles.colorBtnActive,
                 ]}
                 onPress={() => setSelectedColor(color.value)}
-              />
+              >
+                {selectedColor === color.value && (
+                  <View style={styles.colorCheckDot} />
+                )}
+              </TouchableOpacity>
             ))}
           </View>
         </View>
@@ -79,77 +89,93 @@ export default function OnboardingScreen({ route }: AuthScreenProps<'Onboarding'
             value={calendarName}
             onChangeText={setCalendarName}
             placeholder={`${nickname}의 하루`}
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={COLORS.gray400}
           />
         </View>
       </ScrollView>
 
       <View style={styles.bottom}>
-        <TouchableOpacity
-          style={[styles.submitButton, !calendarName.trim() && styles.submitButtonDisabled]}
+        <GradientButton
+          title={loading ? '처리 중...' : '시작하기'}
           onPress={handleComplete}
           disabled={!calendarName.trim() || loading}
-        >
-          <Text style={styles.submitButtonText}>{loading ? '처리 중...' : '시작하기'}</Text>
-        </TouchableOpacity>
+        />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFFFF' },
+  container: { flex: 1, backgroundColor: COLORS.white },
   content: { flex: 1 },
   contentInner: { paddingHorizontal: 32, paddingTop: 48 },
   title: {
-    fontSize: 24,
-    fontWeight: '500',
+    fontSize: 26,
+    fontWeight: '700',
     textAlign: 'center',
     marginBottom: 48,
-    color: '#000',
+    color: COLORS.gray900,
   },
   profileSection: { alignItems: 'center', marginBottom: 48 },
   profileImage: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: '#F3F4F6',
+    width: 120,
+    height: 120,
+    borderRadius: 60,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
   },
-  profileHint: { fontSize: 14, color: '#6B7280' },
+  profileInitial: {
+    fontSize: 40,
+    fontWeight: '600',
+    color: COLORS.white,
+  },
+  profileHint: { fontSize: 14, color: COLORS.gray500 },
   colorSection: { marginBottom: 32 },
-  label: { fontSize: 14, color: '#4B5563', marginBottom: 12 },
-  colorGrid: { flexDirection: 'row', gap: 12, flexWrap: 'wrap' },
-  colorButton: { width: 40, height: 40, borderRadius: 20 },
-  colorSelected: {
+  label: { fontSize: 14, color: COLORS.gray600, marginBottom: 12 },
+  selectedColorName: {
+    fontSize: 13,
+    color: COLORS.primary,
+    fontWeight: '500',
+    marginBottom: 8,
+  },
+  colorGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  colorBtn: {
+    width: 72,
+    height: 72,
+    borderRadius: RADIUS.xl,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  colorBtnActive: {
     borderWidth: 3,
-    borderColor: '#FFFFFF',
-    shadowColor: '#000',
+    borderColor: COLORS.white,
+    shadowColor: COLORS.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 4,
   },
-  divider: { height: 1, backgroundColor: '#E5E7EB', marginVertical: 32 },
+  colorCheckDot: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: COLORS.white,
+  },
+  divider: { height: 1, backgroundColor: COLORS.gray200, marginVertical: 32 },
   nameSection: {},
   input: {
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 12,
+    borderColor: COLORS.gray200,
+    borderRadius: RADIUS.xl,
     fontSize: 16,
-    color: '#000',
+    color: COLORS.gray900,
   },
   bottom: { paddingHorizontal: 32, paddingBottom: 32 },
-  submitButton: {
-    backgroundColor: '#7C3AED',
-    paddingVertical: 16,
-    borderRadius: 16,
-    alignItems: 'center',
-  },
-  submitButtonDisabled: { opacity: 0.5 },
-  submitButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '500' },
 });

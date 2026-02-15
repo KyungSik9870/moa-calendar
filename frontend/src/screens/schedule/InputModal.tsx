@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ScheduleForm from './ScheduleForm';
 import ExpenseForm from './ExpenseForm';
 import IncomeForm from './IncomeForm';
+import GradientButton from '../../components/common/GradientButton';
+import { COLORS, RADIUS } from '../../constants/theme';
 import type { ScheduleResponse } from '../../types/api';
 
 type Tab = 'schedule' | 'expense' | 'income';
@@ -21,14 +23,12 @@ export default function InputModal({
   schedules,
   onClose,
 }: InputModalProps) {
-  const [activeTab, setActiveTab] = useState<Tab>('schedule');
-  const [formRef, setFormRef] = useState<{ submit: () => Promise<boolean> } | null>(
-    null,
-  );
+  const [activeTab, setActiveTab] = React.useState<Tab>('schedule');
+  const formRef = useRef<{ submit: () => Promise<boolean> } | null>(null);
 
   const handleSave = async () => {
-    if (formRef) {
-      const success = await formRef.submit();
+    if (formRef.current) {
+      const success = await formRef.current.submit();
       if (success) onClose();
     }
   };
@@ -51,7 +51,7 @@ export default function InputModal({
         <View style={styles.handleRow}>
           <View style={styles.handle} />
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Icon name="close" size={20} color="#4B5563" />
+            <Icon name="close" size={20} color={COLORS.gray600} />
           </TouchableOpacity>
         </View>
 
@@ -81,7 +81,7 @@ export default function InputModal({
             <ScheduleForm
               selectedDate={selectedDate}
               groupId={groupId}
-              ref={(r: { submit: () => Promise<boolean> } | null) => setFormRef(r)}
+              ref={formRef}
             />
           )}
           {activeTab === 'expense' && (
@@ -89,23 +89,21 @@ export default function InputModal({
               selectedDate={selectedDate}
               groupId={groupId}
               schedules={schedules}
-              ref={(r: { submit: () => Promise<boolean> } | null) => setFormRef(r)}
+              ref={formRef}
             />
           )}
           {activeTab === 'income' && (
             <IncomeForm
               selectedDate={selectedDate}
               groupId={groupId}
-              ref={(r: { submit: () => Promise<boolean> } | null) => setFormRef(r)}
+              ref={formRef}
             />
           )}
         </ScrollView>
 
         {/* Save Button */}
         <View style={styles.saveContainer}>
-          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.saveButtonText}>저장</Text>
-          </TouchableOpacity>
+          <GradientButton title="저장" onPress={handleSave} />
         </View>
       </View>
     </View>
@@ -122,9 +120,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modal: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    backgroundColor: COLORS.white,
+    borderTopLeftRadius: RADIUS.xxl,
+    borderTopRightRadius: RADIUS.xxl,
     maxHeight: '85%',
     overflow: 'hidden',
   },
@@ -134,21 +132,21 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   handle: {
-    width: 40,
+    width: 36,
     height: 4,
-    backgroundColor: '#D1D5DB',
+    backgroundColor: COLORS.gray300,
     borderRadius: 2,
   },
   closeButton: {
     position: 'absolute',
-    right: 16,
-    top: 8,
+    right: 20,
+    top: 10,
     padding: 8,
   },
   tabBar: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: COLORS.gray200,
   },
   tab: {
     flex: 1,
@@ -156,36 +154,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tabActive: {
-    borderBottomWidth: 2,
-    borderBottomColor: '#2563EB',
+    borderBottomWidth: 3,
+    borderBottomColor: COLORS.primary,
   },
   tabText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#6B7280',
+    fontSize: 15,
+    fontWeight: '600',
+    color: COLORS.gray500,
   },
   tabTextActive: {
-    color: '#2563EB',
+    color: COLORS.primary,
   },
   formContent: {
     paddingHorizontal: 24,
-    paddingVertical: 16,
+    paddingVertical: 20,
   },
   saveContainer: {
     paddingHorizontal: 24,
     paddingVertical: 16,
     borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
-  },
-  saveButton: {
-    backgroundColor: '#7C3AED',
-    paddingVertical: 16,
-    borderRadius: 16,
-    alignItems: 'center',
-  },
-  saveButtonText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '500',
+    borderTopColor: COLORS.gray100,
   },
 });

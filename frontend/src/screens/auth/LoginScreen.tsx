@@ -13,6 +13,8 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import { authApi } from '../../api/auth';
 import { useAuthStore } from '../../store/authStore';
+import { COLORS } from '../../constants/theme';
+import GradientButton from '../../components/common/GradientButton';
 import type { AuthScreenProps } from '../../types/navigation';
 
 export default function LoginScreen({ navigation }: AuthScreenProps<'Login'>) {
@@ -28,7 +30,7 @@ export default function LoginScreen({ navigation }: AuthScreenProps<'Login'>) {
     setLoading(true);
     try {
       const response = await authApi.login({ email, password });
-      await setAuth(response.token, response.user);
+      await setAuth(response.token.access_token, response.user);
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : '로그인에 실패했습니다';
       Alert.alert('오류', msg);
@@ -41,7 +43,7 @@ export default function LoginScreen({ navigation }: AuthScreenProps<'Login'>) {
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Icon name="chevron-back" size={24} color="#000" />
+          <Icon name="chevron-back" size={24} color={COLORS.gray900} />
         </TouchableOpacity>
       </View>
 
@@ -56,7 +58,7 @@ export default function LoginScreen({ navigation }: AuthScreenProps<'Login'>) {
               value={email}
               onChangeText={setEmail}
               placeholder="minsu@email.com"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={COLORS.gray400}
               keyboardType="email-address"
               autoCapitalize="none"
             />
@@ -69,7 +71,7 @@ export default function LoginScreen({ navigation }: AuthScreenProps<'Login'>) {
               value={password}
               onChangeText={setPassword}
               placeholder="••••••••"
-              placeholderTextColor="#9CA3AF"
+              placeholderTextColor={COLORS.gray400}
               secureTextEntry
             />
           </View>
@@ -77,50 +79,40 @@ export default function LoginScreen({ navigation }: AuthScreenProps<'Login'>) {
       </ScrollView>
 
       <View style={styles.bottom}>
-        <TouchableOpacity
-          style={[styles.submitButton, !isValid && styles.submitButtonDisabled]}
+        <GradientButton
+          title={loading ? '로그인 중...' : '로그인'}
           onPress={handleLogin}
           disabled={!isValid || loading}
-        >
-          <Text style={styles.submitButtonText}>{loading ? '로그인 중...' : '로그인'}</Text>
-        </TouchableOpacity>
+        />
       </View>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFFFF' },
+  container: { flex: 1, backgroundColor: COLORS.white },
   header: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     paddingVertical: 16,
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: '#F3F4F6',
+    borderBottomColor: COLORS.gray100,
   },
   backButton: { padding: 8, marginLeft: -8 },
   content: { flex: 1, paddingHorizontal: 32, paddingTop: 32 },
-  title: { fontSize: 30, fontWeight: '500', marginBottom: 32, color: '#000' },
+  title: { fontSize: 28, fontWeight: '700', marginBottom: 32, color: COLORS.gray900 },
   form: { gap: 24 },
   field: {},
-  label: { fontSize: 14, color: '#4B5563', marginBottom: 8 },
+  label: { fontSize: 14, color: COLORS.gray600, marginBottom: 8 },
   input: {
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 16,
     borderWidth: 1,
-    borderColor: '#E5E7EB',
-    borderRadius: 12,
+    borderColor: COLORS.gray200,
+    borderRadius: 20,
     fontSize: 16,
-    color: '#000',
+    color: COLORS.gray900,
   },
   bottom: { paddingHorizontal: 32, paddingBottom: 32 },
-  submitButton: {
-    backgroundColor: '#7C3AED',
-    paddingVertical: 16,
-    borderRadius: 16,
-    alignItems: 'center',
-  },
-  submitButtonDisabled: { opacity: 0.5 },
-  submitButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '500' },
 });
